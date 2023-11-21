@@ -30,8 +30,66 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  updateUserById: async (req, res) => {},
-  deleteUserById: async (req, res) => {},
-  addFriend: async (req, res) => {},
-  removeFriend: async (req, res) => {},
+  updateUserById: async (req, res) => {
+    try {
+      const updatedUser = await User.findOneAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
+
+      if (!updatedUser) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+
+      return res.status(200).json(updatedUser);
+    } catch (err) {
+      return res.status(500).json(err);
+    }
+  },
+  deleteUserById: async (req, res) => {
+    try {
+      const deletedUser = await User.findOneAndDelete(req.params.id);
+
+      if (!deletedUser) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+
+      return res.status(200).json(deletedUser);
+    } catch (err) {
+      return res.status(500).json(err);
+    }
+  },
+  addFriend: async (req, res) => {
+    try {
+      const result = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $addToSet: { friends: req.params.friendId } },
+        { new: true }
+      );
+
+      if (!result) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+
+      return res.status(200).json(result);
+    } catch (err) {
+      return res.status(500).json(err);
+    }
+  },
+  removeFriend: async (req, res) => {
+    try {
+      const result = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { friends: req.params.friendId } },
+        { new: true }
+      );
+
+      if (!result) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+
+      return res.status(200).json(result);
+    } catch (err) {
+      return res.status(500).json(err);
+    }
+  },
 };
