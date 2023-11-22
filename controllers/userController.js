@@ -13,7 +13,10 @@ module.exports = {
   // Get user by ID
   getUserById: async (req, res) => {
     try {
-      const user = await User.findById(req.params.userId);
+      const user = await User.findById(req.params.userId).populate([
+        'friends',
+        'thoughts',
+      ]);
 
       if (!user) {
         return res.status(400).json({ message: 'No user by that ID' });
@@ -36,9 +39,11 @@ module.exports = {
   // Update user by ID
   updateUserById: async (req, res) => {
     try {
-      const updatedUser = await User.findOneAndUpdate(req.params.id, req.body, {
-        new: true,
-      });
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        req.body,
+        { new: true }
+      );
 
       if (!updatedUser) {
         return res.status(400).json({ message: 'User not found' });
@@ -52,7 +57,9 @@ module.exports = {
   // Delete a user by ID
   deleteUserById: async (req, res) => {
     try {
-      const deletedUser = await User.findOneAndDelete(req.params.id);
+      const deletedUser = await User.findOneAndDelete({
+        _id: req.params.userId,
+      });
 
       if (!deletedUser) {
         return res.status(400).json({ message: 'User not found' });
