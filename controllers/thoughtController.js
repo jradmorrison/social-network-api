@@ -78,8 +78,7 @@ module.exports = {
       // remove thought id from user's `thoughts`
       const user = User.findOneAndUpdate(
         { thoughts: req.params.thoughtId },
-        { $pull: { thoughts: req.params.thoughtId } },
-        { new: true }
+        { $pull: { thoughts: req.params.thoughtId } }
       );
 
       if (!user) {
